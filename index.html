@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TEDxVITPune — Dimes of Dynamism. An independent TEDx event celebrating ideas worth spreading." />
+  <title>TEDxVITPune — Dimes of Dynamism | Official Experience</title>
+  
+  <!-- Fonts: Syne, Space Grotesk, DM Sans, DM Mono, Playfair Display, Bebas Neue, Anton, Oswald, Teko -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Oswald:wght@600;700&family=Teko:wght@600;700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- CDNs for Three.js and Lucide Icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="stylesheet" href="./Threads.css" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+  <!-- Grain Overlay & Top 2px Progress Bar -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+
+  <!-- Custom Spring Physics Cursor -->
+  <div id="customCursor" class="custom-cursor" aria-hidden="true">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. CINEMATIC PRE-LOADER / ENTRANCE MODAL                                 -->
+  <!-- ========================================================================= -->
+  <div id="cinematicOverlay" class="cinematic-overlay" role="dialog" aria-modal="true" aria-label="Cinematic Experience Intro">
+    <canvas id="cinematicCanvas" class="cinematic-canvas"></canvas>
+    
+    <div class="cinematic-topbar">
+      <div class="cinematic-brand">TED<span>x</span>VITPune</div>
+      <div class="cinematic-controls">
+        <button id="audioToggleBtn" class="cin-btn" type="button" aria-label="Toggle ambient sound">
+          <span class="audio-wave"></span>
+          <span id="audioStatusText">Sound: OFF</span>
+        </button>
+        <button id="skipCinematicBtn" class="cin-btn cin-btn-skip" type="button">Skip Intro ↗</button>
+      </div>
+    </div>
+
+    <!-- Stage 0: Initializing -->
+    <div id="cinStage0" class="cin-stage active">
+      <div class="cin-loader-ring"></div>
+      <p class="cin-mono-tag">INITIALIZING CINEMATIC STAGE...</p>
+      <span class="cin-meta-coord">18.5204° N, 73.8567° E · PUNE</span>
+    </div>
+
+    <!-- Stage 1: The Quote -->
+    <div id="cinStage1" class="cin-stage">
+      <p class="cin-kicker">EDITION X · DECADE MILESTONE</p>
+      <blockquote class="cin-quote">
+        “Some moments don’t shout...<br />
+        <span class="cin-highlight">But they change everything.</span>”
+      </blockquote>
+      <p class="cin-author">— TEDxVITPune Stage Archive</p>
+    </div>
+
+    <!-- Stage 2: High-Speed Theme Reel -->
+    <div id="cinStage2" class="cin-stage">
+      <div class="cin-reel-box">
+        <div class="cin-reel-counter" id="cinFrameCounter">EDITION 01 / 10</div>
+        <div class="cin-theme-display" id="cinThemeName">FRAGMENTS</div>
+        <div class="cin-film-strip" id="cinFilmStrip">
+          <div class="film-cell">2021 · UNRAVEL</div>
+          <div class="film-cell">2022 · RESURGENCE</div>
+          <div class="film-cell">2023 · FRAGMENTS</div>
+          <div class="film-cell">2024 · THE SPACE BETWEEN</div>
+          <div class="film-cell active">2025 · DIMES OF DYNAMISM</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 3: Call to Action -->
+    <div id="cinStage3" class="cin-stage">
+      <div class="cin-cta-wrap">
+        <span class="cin-badge">THE STAGE IS LIVE</span>
+        <h2 class="cin-cta-title" id="cinCtaTitle">DIMES OF DYNAMISM</h2>
+        <p class="cin-cta-desc">10 Editions. Countless perspectives. One transformative stage.</p>
+        <button id="enterExperienceBtn" class="btn-primary-glow" type="button">
+          <span>ENTER THE STAGE</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. GLOBAL LAYOUT SHELL & FLOATING NAV PILL (CX, wX)                       -->
+  <!-- ========================================================================= -->
+  <header class="site-header" id="siteHeader">
+    <!-- Brand -->
+    <a class="brand" href="#hero" aria-label="TEDxVITPune home">
+      <span class="brand-mark">TED<span>x</span></span>
+      <span class="brand-place">VITPune</span>
+    </a>
+
+    <!-- Floating Nav Pill (wX) with Accordion Dropdowns -->
+    <nav class="nav-pill" id="navPill" aria-label="Primary navigation">
+      <a class="nav-item active" href="#hero" data-skip-cin="true">Stage</a>
+      
+      <!-- Gallery Dropdown -->
+      <div class="nav-dropdown-group">
+        <button class="nav-dropdown-toggle" type="button" aria-expanded="false">
+          Gallery <span class="chevron-arrow">▾</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a href="#lookbook" class="dropdown-link">
+            <span class="dot"></span>
+            <div>
+              <strong>Lookbook</strong>
+              <small>46 curated moments & stills</small>
+            </div>
+          </a>
+          <a href="#community-conversations" class="dropdown-link">
+            <span class="dot"></span>
+            <div>
+              <strong>Community Conversations</strong>
+              <small>3D rotary cylinder & memories</small>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Discover Dropdown -->
+      <div class="nav-dropdown-group">
+        <button class="nav-dropdown-toggle" type="button" aria-expanded="false">
+          Discover <span class="chevron-arrow">▾</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a href="#newsletter" class="dropdown-link">
+            <span class="dot"></span>
+            <div>
+              <strong>Newsletter “Genesis”</strong>
+              <small>Canvas document edition</small>
+            </div>
+          </a>
+          <a href="#event-details" class="dropdown-link">
+            <span class="dot"></span>
+            <div>
+              <strong>Event & Passes</strong>
+              <small>Schedule, speakers & venue</small>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <a class="nav-item" href="#about">About</a>
+      <a class="nav-item" href="#speakers">Speakers</a>
+    </nav>
+
+    <!-- User Auth Button / Profile Pill -->
+    <div class="header-right-actions">
+      <button id="authPillBtn" class="auth-pill-btn" type="button" aria-label="Account or Join Community">
+        <span class="pulse-indicator"></span>
+        <span class="auth-pill-text" id="authPillLabel">JOIN THE COMMUNITY</span>
+        <div class="user-avatar-circle" id="userAvatarThumb">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </button>
+
+      <!-- Mobile Hamburger Toggle -->
+      <button id="mobileNavToggle" class="mobile-nav-toggle" type="button" aria-label="Toggle Navigation Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <aside id="mobileDrawer" class="mobile-drawer" aria-hidden="true">
+    <div class="mobile-drawer-inner">
+      <div class="mobile-drawer-head">
+        <span class="brand-mark">TED<span>x</span>VITPune</span>
+        <button id="closeDrawerBtn" class="close-drawer-btn" type="button">✕</button>
+      </div>
+      <div class="mobile-drawer-links">
+        <a href="#hero" class="mob-link">Stage & Hero</a>
+        <a href="#lookbook" class="mob-link">Lookbook Gallery</a>
+        <a href="#community-conversations" class="mob-link">Community Conversations</a>
+        <a href="#speakers" class="mob-link">Previous Speakers</a>
+        <a href="#editions" class="mob-link">Archive Editions</a>
+        <a href="#newsletter" class="mob-link">Newsletter Genesis</a>
+        <a href="#event-details" class="mob-link">Event Details & Passes</a>
+        <a href="#about" class="mob-link">About TED & TEDx</a>
+        <a href="#organizers" class="mob-link">Contact & Organizers</a>
+      </div>
+      <div class="mobile-drawer-foot">
+        <button id="mobAuthBtn" class="btn-primary-glow full-width" type="button">Join / Profile</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 3. CONTINUOUS CINEMATIC SCROLL STAGE & REACT BITS THREADS HERO            -->
+  <!-- ========================================================================= -->
+  <main id="top">
+
+    <!-- CONTINUOUS STAGE SCROLL CHOREOGRAPHY SECTION (220vh) -->
+    <section class="stage-scroll-section" id="hero" aria-labelledby="heroTitle">
+      
+      <!-- Vignette & Atmospheric Fog -->
+      <div class="stage-vignette" aria-hidden="true"></div>
+
+      <!-- React Bits <Threads /> Background Container (Full-width layered background) -->
+      <div id="threadsBgContainer" class="threads-bg-wrapper" aria-hidden="true">
+        <!-- Canvas injected by Threads engine -->
+      </div>
+
+      <!-- Stage Curtains for Continuous Scroll Peeling Animation -->
+      <div class="curtain curtain-left" aria-hidden="true"></div>
+      <div class="curtain curtain-right" aria-hidden="true"></div>
+
+      <!-- 3 Layered Mountain & Mist Stage Windows (Scroll-transforming into archive posters) -->
+      <div class="stage-window stage-window-a" aria-hidden="true">
+        <div class="mountain mountain-back"></div>
+        <div class="mountain mountain-front"></div>
+        <div class="mist"></div>
+      </div>
+      <div class="stage-window stage-window-b" aria-hidden="true">
+        <div class="mountain mountain-back"></div>
+        <div class="mountain mountain-front"></div>
+        <div class="mist"></div>
+      </div>
+      <div class="stage-window stage-window-c" aria-hidden="true">
+        <div class="mountain mountain-back"></div>
+        <div class="mountain mountain-front"></div>
+        <div class="mist"></div>
+      </div>
+
+      <!-- Stage Wordmark (Scales & Moves on Continuous Scroll) -->
+      <div class="stage-wordmark" aria-hidden="true">TED<span>x</span>VITPune</div>
+
+      <!-- Pinned Hero Content (Position Relative / Higher Z-index over Threads background) -->
+      <div class="stage-hero-content">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-line"></span>
+          <span>10TH EDITION MILESTONE · AN INDEPENDENT TEDx EVENT</span>
+          <span class="eyebrow-line"></span>
+        </div>
+        
+        <p class="hero-edition-kicker">ANNUAL FLAGSHIP CONFERENCE · THE STAGE BECOMES A MEMORY</p>
+        
+        <!-- Upgraded High-Impact Font for DIMES OF DYNAMISM -->
+        <h1 id="heroTitle" class="hero-title kinetic-type">
+          <span class="title-top">DIMES OF</span><br />
+          <span class="title-bottom gradient-text">DYNAMISM</span>
+        </h1>
+        
+        <p class="hero-subtitle">
+          Unfolding a decade of transformative ideas, bold narratives, and radical catalysts 
+          redefining our collective horizons in Pune.
+        </p>
+        
+        <div class="hero-cta-group">
+          <a href="#event-details" class="btn-primary-glow">
+            <span>Register Now</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#experience" class="btn-secondary-outline">
+            <span>Know More ↓</span>
+          </a>
+        </div>
+
+        <div class="hero-stats-strip">
+          <div class="stat-item">
+            <span class="stat-num">10+</span>
+            <span class="stat-desc">Editions</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">75+</span>
+            <span class="stat-desc">Speakers</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">#1</span>
+            <span class="stat-desc">In Pune</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">15K+</span>
+            <span class="stat-desc">Impact</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage Footer Coordinates -->
+      <div class="stage-footer-bar">
+        <span>18.5204° N, 73.8567° E · VIT AUDITORIUM</span>
+        <span class="pulse-tag"><span class="pulse-dot"></span> SCROLL TO DESCEND THROUGH ARCHIVE</span>
+        <span>01 / 10 EDITIONS</span>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- ARCHIVE THRESHOLD: 3 WINDOWS BECOME MEMORIES                            -->
+    <!-- ======================================================================= -->
+    <section class="archive-intro-section" id="archive" aria-labelledby="archiveTitle">
+      <div class="container">
+        <div class="section-label">I / THE STAGE BECOMES A MEMORY</div>
+        <div class="intro-grid">
+          <div>
+            <h2 id="archiveTitle" class="section-title">Three Windows.<br /><em>Many ways to see.</em></h2>
+          </div>
+          <div class="intro-note">
+            <p>The paintings and canvases that framed the stage are not scenery. They are thresholds into the editions that came before — fragments of questions, voices, and rooms full of possibility.</p>
+            <p class="meta-note">Decade Archive · 2015 — 2025 · Curated at Vishwakarma Institute of Technology</p>
+          </div>
+        </div>
+        <div class="poster-row" id="posterRow"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 3.3 EXPERIENCE HIGHLIGHTS & PILLARS                                     -->
+    <!-- ======================================================================= -->
+    <section class="experience-section" id="experience" aria-labelledby="expHeading">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">CORE PILLARS</div>
+          <h2 id="expHeading" class="section-title">The TEDx Experience<br /><em>Redefined.</em></h2>
+          <p class="section-desc">More than a series of talks — a full-day immersive convergence of visionary minds, groundbreaking art, and community energy.</p>
+        </div>
+
+        <div class="pillars-grid">
+          <!-- Pillar 1 -->
+          <article class="pillar-card">
+            <div class="pillar-icon-box">
+              <span class="pillar-num">01</span>
+              <div class="pillar-badge">TALKS</div>
+            </div>
+            <h3 class="pillar-title">Immersive Talks</h3>
+            <p class="pillar-copy">
+              Curated 18-minute masterclasses by pioneers, researchers, creators, and rebels who distill decades of obsession into actionable paradigm shifts.
+            </p>
+            <ul class="pillar-features">
+              <li>✦ Interdisciplinary breakthrough insights</li>
+              <li>✦ Live interactive audience Q&A</li>
+              <li>✦ Global TEDx platform distribution</li>
+            </ul>
+          </article>
+
+          <!-- Pillar 2 -->
+          <article class="pillar-card highlight">
+            <div class="pillar-icon-box">
+              <span class="pillar-num">02</span>
+              <div class="pillar-badge">ARTS</div>
+            </div>
+            <h3 class="pillar-title">Live Performances</h3>
+            <p class="pillar-copy">
+              Unrivaled theatrical spectacles, experimental soundscapes, and expressive kinetic arts designed exclusively to electrify the auditorium.
+            </p>
+            <ul class="pillar-features">
+              <li>✦ Fusion musical and percussive sets</li>
+              <li>✦ Visual storytelling & live installations</li>
+              <li>✦ Synchronized stage design choreography</li>
+            </ul>
+          </article>
+
+          <!-- Pillar 3 -->
+          <article class="pillar-card">
+            <div class="pillar-icon-box">
+              <span class="pillar-num">03</span>
+              <div class="pillar-badge">ATMOSPHERE</div>
+            </div>
+            <h3 class="pillar-title">Unforgettable Atmosphere</h3>
+            <p class="pillar-copy">
+              Dedicated experiential networking lounges, tactile interactive exhibits, curated lunch pavilions, and bespoke attendee memorabilia.
+            </p>
+            <ul class="pillar-features">
+              <li>✦ Collaborative idea exchange arenas</li>
+              <li>✦ Exclusive edition merchandise kit</li>
+              <li>✦ High-impact networking with founders & leaders</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 3.4 PREVIOUS SPEAKERS SHOWCASE (INTERACTIVE VIDEO / MEDIA CARDS)       -->
+    <!-- ======================================================================= -->
+    <section class="speakers-section" id="speakers" aria-labelledby="speakersHeading">
+      <div class="container">
+        <div class="section-header-flex">
+          <div>
+            <div class="section-label">VOICES ON STAGE</div>
+            <h2 id="speakersHeading" class="section-title">Previous Speakers<br /><em>& Visionaries.</em></h2>
+          </div>
+          <div class="speaker-carousel-controls">
+            <button id="prevSpeakerBtn" class="carousel-arrow-btn" aria-label="Previous Speaker">←</button>
+            <span id="speakerCounter" class="counter-display">01 / 05</span>
+            <button id="nextSpeakerBtn" class="carousel-arrow-btn" aria-label="Next Speaker">→</button>
+          </div>
+        </div>
+
+        <div class="speaker-featured-panel" id="speakerFeaturedPanel">
+          <div class="speaker-video-card">
+            <div class="video-preview-wrap">
+              <canvas id="speakerAudioCanvas" class="speaker-canvas"></canvas>
+              <img id="speakerHeroImg" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=82" alt="Speaker" class="speaker-hero-img" />
+              <div class="video-overlay-gradient"></div>
+              <div class="video-play-hint">
+                <div class="play-pulse-ring"></div>
+                <div class="play-btn-circle">▶</div>
+                <span>Hover / Click to Stream Talk Preview</span>
+              </div>
+              <div class="speaker-edition-tag" id="speakerEditionTag">EDITION 2024 · THE SPACE BETWEEN</div>
+            </div>
+          </div>
+
+          <div class="speaker-info-col">
+            <div class="speaker-meta-tag" id="speakerFieldTag">SUSTAINABLE ARCHITECTURE</div>
+            <h3 class="speaker-name" id="speakerNameDisplay">Sujay Dhake</h3>
+            <p class="speaker-designation" id="speakerRoleDisplay">Green Construction Pioneer & Sustainability Visionary</p>
+            <div class="speaker-talk-badge">
+              <span class="talk-label">TALK TOPIC:</span>
+              <strong id="speakerTalkTitle">“Decarbonizing Built Environments Through Biophilic Logic”</strong>
+            </div>
+            <p class="speaker-bio-text" id="speakerBioDisplay">
+              Leading the revolution in sustainable engineering, Sujay demonstrates how carbon-negative materials and biological vernacular design can radically alter metropolitan thermal footprints.
+            </p>
+            <div class="speaker-action-row">
+              <button class="btn-primary-glow small-btn" id="watchFullTalkBtn" type="button">
+                <span>Watch Full Talk</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="btn-secondary-outline small-btn" id="speakerTranscriptBtn" type="button">
+                <span>Read Synopsis</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speaker Thumbnails Strip -->
+        <div class="speaker-thumbnails-strip" id="speakerThumbnails">
+          <!-- Populated by script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 3.5 PREVIOUS EDITIONS ARCHIVE SLIDER                                    -->
+    <!-- ======================================================================= -->
+    <section class="editions-section" id="editions" aria-labelledby="editionsHeading">
+      <div class="container">
+        <div class="section-header-flex">
+          <div>
+            <div class="section-label">ANNUAL CHRONICLES</div>
+            <h2 id="editionsHeading" class="section-title">Previous Editions<br /><em>& Themes.</em></h2>
+            <p class="section-desc">Drag horizontally or click a frame to unfold past milestones.</p>
+          </div>
+          <div class="drag-hint-badge">
+            <span class="drag-icon-anim">⟷</span>
+            <span>DRAG OR SWIPE SLIDER</span>
+          </div>
+        </div>
+
+        <div class="editions-drag-container" id="editionsSlider" tabindex="0" role="region" aria-label="Archive Editions Slider">
+          <!-- Populated by script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4.1 ABOUT PAGE (THREE.JS TORUS SCENE & 3-TAB STORY)                     -->
+    <!-- ======================================================================= -->
+    <section class="about-experience-section" id="about" aria-labelledby="aboutHeading">
+      <!-- 3D Three.js Torus Scene Canvas -->
+      <div id="aboutTorusCanvas" class="about-torus-canvas"></div>
+      <div class="about-backdrop-gradient"></div>
+
+      <div class="container relative-z">
+        <div class="about-split-layout">
+          <div class="about-left-col">
+            <div class="section-label">THE PHILOSOPHY</div>
+            <h2 id="aboutHeading" class="section-title">Ideas Worth<br /><em>Spreading.</em></h2>
+            <p class="about-lead">
+              TEDx is a program of local, self-organized events that bring people together to share a TED-like experience. At TEDxVITPune, x = independently organized TED event.
+            </p>
+            <div class="about-metric-pill">
+              <span class="metric-num">39</span>
+              <span class="metric-text">Years of Global TED History</span>
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <!-- 3-Tab Story Carousel Navigation -->
+            <div class="story-tabs-nav" role="tablist">
+              <button class="story-tab active" id="tabOrigins" role="tab" aria-selected="true" data-story="origins">
+                01 / ORIGINS (TED)
+              </button>
+              <button class="story-tab" id="tabCommunity" role="tab" aria-selected="false" data-story="community">
+                02 / COMMUNITY (TEDx)
+              </button>
+              <button class="story-tab" id="tabLegacy" role="tab" aria-selected="false" data-story="legacy">
+                03 / LEGACY (VITPune)
+              </button>
+            </div>
+
+            <!-- Tab 1: Origins -->
+            <div class="story-card active" id="storyOrigins" role="tabpanel">
+              <div class="story-badge">WHAT IS TED?</div>
+              <h3 class="story-heading">A Global Movement for Ideas That Shift Civilizations</h3>
+              <p class="story-body">
+                Founded in 1984 as a conference bringing together Technology, Entertainment, and Design, TED has evolved into a worldwide platform covering science, business, arts, and global issues in over 100 languages.
+              </p>
+              <div class="story-facts">
+                <div class="fact-box"><strong>6,000+</strong><span>Worldwide events hosted</span></div>
+                <div class="fact-box"><strong>18 Mins</strong><span>Gold standard talk limit</span></div>
+                <div class="fact-box"><strong>3 Billion+</strong><span>Global talk video views</span></div>
+              </div>
+            </div>
+
+            <!-- Tab 2: Community -->
+            <div class="story-card" id="storyCommunity" role="tabpanel">
+              <div class="story-badge">WHAT IS TEDx?</div>
+              <h3 class="story-heading">Self-Organized Catalysts Empowering Local Voices</h3>
+              <p class="story-body">
+                In the spirit of ideas worth spreading, TEDx is a program of local, self-organized events that bring communities together to share a TED-like experience under an official license from TED.
+              </p>
+              <div class="story-facts">
+                <div class="fact-box"><strong>170+</strong><span>Participating countries</span></div>
+                <div class="fact-box"><strong>100%</strong><span>Non-profit volunteer driven</span></div>
+                <div class="fact-box"><strong>Grassroots</strong><span>Spotlighting regional genius</span></div>
+              </div>
+            </div>
+
+            <!-- Tab 3: Legacy -->
+            <div class="story-card" id="storyLegacy" role="tabpanel">
+              <div class="story-badge">WHAT IS TEDxVITPune?</div>
+              <h3 class="story-heading">A Decade of Milestone Ideas at VIT Pune</h3>
+              <p class="story-body">
+                Established with a vision to ignite intellectual curiosity in Maharashtra’s cultural and educational capital, TEDxVITPune has grown into Pune’s premier student-led intellectual conference, celebrating its 10th milestone edition.
+              </p>
+              <div class="story-facts">
+                <div class="fact-box"><strong>10 Editions</strong><span>Decade milestone archive</span></div>
+                <div class="fact-box"><strong>#1 Ranked</strong><span>In Pune student ecosystem</span></div>
+                <div class="fact-box"><strong>15,000+</strong><span>Community alumni network</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4.2 LOOKBOOK GALLERY (SX — 46 WEBP MASONRY & LIVE COUNTER)              -->
+    <!-- ======================================================================= -->
+    <section class="lookbook-section" id="lookbook" aria-labelledby="lookbookHeading">
+      <div class="container">
+        <div class="section-header-flex">
+          <div>
+            <div class="section-label">PHOTO ARCHIVE</div>
+            <h2 id="lookbookHeading" class="section-title">Lookbook Gallery<br /><em>Captured Stills.</em></h2>
+            <p class="section-desc">A visual anthology of stage moments, backstage rush, and audience reactions.</p>
+          </div>
+          
+          <div class="lookbook-status-box">
+            <div class="loader-track"><div class="loader-fill" id="lookbookLoaderFill"></div></div>
+            <span class="loader-text" id="lookbookLoaderStatus">ASYNC ASSETS LOADED: 100% (46/46)</span>
+          </div>
+        </div>
+
+        <!-- Filter Tags -->
+        <div class="lookbook-filters">
+          <button class="filter-chip active" data-filter="all">All Stills (46)</button>
+          <button class="filter-chip" data-filter="stage">Stage Talks</button>
+          <button class="filter-chip" data-filter="audience">Audience Energy</button>
+          <button class="filter-chip" data-filter="backstage">Behind The Scenes</button>
+          <button class="filter-chip" data-filter="performances">Performances</button>
+        </div>
+
+        <!-- Masonry Grid -->
+        <div class="lookbook-masonry" id="lookbookMasonry"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4.3 COMMUNITY CONVERSATIONS (sG — 3D CYLINDER ROTARY RING)              -->
+    <!-- ======================================================================= -->
+    <section class="community-conv-section" id="community-conversations" aria-labelledby="convHeading">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="section-label">COMMUNITY ENGAGEMENT</div>
+          <h2 id="convHeading" class="section-title">Community Conversations<br /><em>The Rotary Ring.</em></h2>
+          <p class="section-desc max-w-600">
+            Intimate roundtables, salon sessions, and grassroots dialogues hosted throughout the year across Pune.
+          </p>
+        </div>
+
+        <!-- 3D Rotary Cylinder Visual Area -->
+        <div class="cylinder-stage-wrapper">
+          <div class="cylinder-carousel" id="cylinderCarousel"></div>
+          <div class="cylinder-controls-hint">
+            <span>DRAG HORIZONTALLY TO SPIN 3D CYLINDER</span>
+          </div>
+        </div>
+
+        <!-- 3-Column Purpose Grid -->
+        <div class="conv-purpose-grid">
+          <div class="purpose-card">
+            <div class="purpose-tag">WHAT?</div>
+            <h4 class="purpose-title">Idea Sharing & Dialogue</h4>
+            <p class="purpose-text">
+              Unfiltered, intimate roundtable discussions where students, researchers, and creators sit as equals to deconstruct pressing socio-technological questions.
+            </p>
+          </div>
+          <div class="purpose-card highlight">
+            <div class="purpose-tag">WHY?</div>
+            <h4 class="purpose-title">Forging Interdisciplinary Bonds</h4>
+            <p class="purpose-text">
+              Real innovation occurs at the intersections. We bridge engineers with philosophers, artists with roboticists, and doctors with policy architects.
+            </p>
+          </div>
+          <div class="purpose-card">
+            <div class="purpose-tag">WHO?</div>
+            <h4 class="purpose-title">Open to All Thinkers</h4>
+            <p class="purpose-text">
+              Free and open access invitations extended to passionate creators, student leaders, and inquisitive minds looking to turn dialogue into real initiatives.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4.4 NEWSLETTER ISSUE — "GENESIS" (EX — CANVAS DOCUMENT VIEWER)          -->
+    <!-- ======================================================================= -->
+    <section class="newsletter-issue-section" id="newsletter" aria-labelledby="newsHeading">
+      <div class="container">
+        <div class="section-header-flex">
+          <div>
+            <div class="section-label">PRINT & DIGITAL MEDIA</div>
+            <h2 id="newsHeading" class="section-title">Official Newsletter<br /><em>Issue: “Genesis”.</em></h2>
+          </div>
+          <div class="issue-badge-pill">
+            <span class="badge-vol">VOL. 1</span>
+            <span class="badge-date">APRIL 2025</span>
+          </div>
+        </div>
+
+        <div class="newsletter-canvas-viewer-wrap">
+          <div class="viewer-toolbar">
+            <div class="viewer-meta">
+              <span class="viewer-doc-title">TEDxVITPune_Genesis_Vol1.pdf</span>
+              <span class="content-protect-badge">🔒 Protected Document View</span>
+            </div>
+            <div class="viewer-pager">
+              <button id="prevPageBtn" class="page-btn" type="button">◀ Prev Page</button>
+              <span id="pageIndicator" class="page-indicator">Page 1 of 4</span>
+              <button id="nextPageBtn" class="page-btn" type="button">Next Page ▶</button>
+            </div>
+          </div>
+
+          <div class="canvas-paper-shadow">
+            <canvas id="newsletterCanvas" width="900" height="1200" class="newsletter-canvas"></canvas>
+          </div>
+          
+          <div class="viewer-footer-note">
+            <span>Tip: Click "Next Page" to flip through editorial spreads. Right-click copy is disabled for publication integrity.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4.5 EVENT DETAILS & TICKETING TIERS (TX)                               -->
+    <!-- ======================================================================= -->
+    <section class="event-details-section" id="event-details" aria-labelledby="eventHeading">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">CONFERENCE LOGISTICS</div>
+          <h2 id="eventHeading" class="section-title">Event Schedule<br /><em>& Delegate Passes.</em></h2>
+          <p class="section-desc">Join us on stage at the VIT Pune Auditorium for the flagship gathering.</p>
+        </div>
+
+        <div class="event-grid-layout">
+          <!-- Timeline Column -->
+          <div class="schedule-column">
+            <h3 class="schedule-head">Master Event Timeline</h3>
+            <div class="timeline-list">
+              <div class="timeline-item">
+                <span class="time-stamp">09:00 AM</span>
+                <div class="timeline-content">
+                  <h4>Delegate Check-in & Breakfast Networking</h4>
+                  <p>Collect attendee badges, kit memorabilia, and connect in the welcome lounge.</p>
+                </div>
+              </div>
+              <div class="timeline-item highlight">
+                <span class="time-stamp">10:15 AM</span>
+                <div class="timeline-content">
+                  <h4>Opening Ceremony & Session 1: Catalysts</h4>
+                  <p>Inauguration address followed by 3 keynote talks and audiovisual showcase.</p>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <span class="time-stamp">01:00 PM</span>
+                <div class="timeline-content">
+                  <h4>Curated Gourmet Lunch & Experience Pavilion</h4>
+                  <p>Buffet dining, interactive sponsor booths, and 3D VR gallery walk.</p>
+                </div>
+              </div>
+              <div class="timeline-item highlight">
+                <span class="time-stamp">02:30 PM</span>
+                <div class="timeline-content">
+                  <h4>Session 2: Uncharted Horizons & Live Performances</h4>
+                  <p>4 speaker keynotes, musical ensemble, and live interactive attendee Q&A.</p>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <span class="time-stamp">05:30 PM</span>
+                <div class="timeline-content">
+                  <h4>Fireside Summary & High-Tea Networking</h4>
+                  <p>Closing reflections, photo sessions with speakers, and speaker memento honors.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ticketing Tiers Column -->
+          <div class="tickets-column">
+            <h3 class="schedule-head">Select Delegate Access</h3>
+            
+            <!-- Tier 1 -->
+            <div class="ticket-card">
+              <div class="ticket-head">
+                <div>
+                  <h4>Student Delegate Pass</h4>
+                  <span class="ticket-sub">Valid college ID required at check-in</span>
+                </div>
+                <div class="ticket-price">₹499</div>
+              </div>
+              <ul class="ticket-perks">
+                <li>✓ Full day access to all speaker sessions</li>
+                <li>✓ Delegate identity kit & official notepad</li>
+                <li>✓ Morning breakfast & refreshments</li>
+              </ul>
+              <button class="btn-secondary-outline full-width book-pass-btn" data-tier="Student Delegate Pass" data-price="499" type="button">
+                Select Student Pass
+              </button>
+            </div>
+
+            <!-- Tier 2 (Popular) -->
+            <div class="ticket-card popular">
+              <div class="popular-ribbon">MOST POPULAR</div>
+              <div class="ticket-head">
+                <div>
+                  <h4>General Delegate Pass</h4>
+                  <span class="ticket-sub">Standard professional admission</span>
+                </div>
+                <div class="ticket-price">₹899</div>
+              </div>
+              <ul class="ticket-perks">
+                <li>✓ Priority seating in main auditorium</li>
+                <li>✓ Full 3-course networking buffet lunch</li>
+                <li>✓ Official TEDxVITPune merchandise kit</li>
+                <li>✓ Access to experience lounge & exhibits</li>
+              </ul>
+              <button class="btn-primary-glow full-width book-pass-btn" data-tier="General Delegate Pass" data-price="899" type="button">
+                Book General Pass →
+              </button>
+            </div>
+
+            <!-- Tier 3 (VIP) -->
+            <div class="ticket-card">
+              <div class="ticket-head">
+                <div>
+                  <h4>VIP Patron Access</h4>
+                  <span class="ticket-sub">Executive all-access pass</span>
+                </div>
+                <div class="ticket-price">₹1,499</div>
+              </div>
+              <ul class="ticket-perks">
+                <li>✓ Front-row executive reserved seating</li>
+                <li>✓ Exclusive Green Room Speaker Meet & Greet lunch</li>
+                <li>✓ Premium VIP gift hamper & certificate</li>
+                <li>✓ Reserved valet parking pass</li>
+              </ul>
+              <button class="btn-secondary-outline full-width book-pass-btn" data-tier="VIP Patron Access" data-price="1499" type="button">
+                Select VIP Access
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4.6 ORGANIZERS & CONTACT BLOCK                                          -->
+    <!-- ======================================================================= -->
+    <section class="organizers-section" id="organizers" aria-labelledby="orgHeading">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="section-label">GET IN TOUCH</div>
+          <h2 id="orgHeading" class="section-title">Organizer Leads<br /><em>& Direct Contact.</em></h2>
+          <p class="section-desc max-w-600">Have questions regarding sponsorship, speaker nominations, or ticketing? Reach out directly to the event directors.</p>
+        </div>
+
+        <div class="organizers-grid">
+          <!-- Organizer 1 -->
+          <div class="organizer-card">
+            <div class="org-avatar-ring">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt="Viraj Jethliya" class="org-img" />
+              <div class="org-ted-badge">LEAD</div>
+            </div>
+            <h3 class="org-name">Viraj Jethliya</h3>
+            <p class="org-title">Lead Organizer & Licensee</p>
+            <p class="org-role-desc">Overseeing curation, production design, and license compliance for TEDxVITPune 2025.</p>
+            <div class="org-contacts">
+              <a href="tel:+919822000000" class="org-contact-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>+91 98220 00000</span>
+              </a>
+              <a href="mailto:viraj@tedxvitpune.org" class="org-contact-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span>viraj@tedxvitpune.org</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Organizer 2 -->
+          <div class="organizer-card">
+            <div class="org-avatar-ring">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=82" alt="Atharva Bonde" class="org-img" />
+              <div class="org-ted-badge">CO-LEAD</div>
+            </div>
+            <h3 class="org-name">Atharva Bonde</h3>
+            <p class="org-title">Co-Organizer & Head of Operations</p>
+            <p class="org-role-desc">Managing stage logistics, technical direction, speaker hospitality, and delegate engagement.</p>
+            <div class="org-contacts">
+              <a href="tel:+919823000000" class="org-contact-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>+91 98230 00000</span>
+              </a>
+              <a href="mailto:atharva@tedxvitpune.org" class="org-contact-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span>atharva@tedxvitpune.org</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4.7 NEWSLETTER SUBSCRIPTION BLOCK                                       -->
+    <!-- ======================================================================= -->
+    <section class="subscribe-section" id="subscribe">
+      <div class="container">
+        <div class="subscribe-card">
+          <div class="subscribe-glow"></div>
+          <div class="subscribe-content">
+            <span class="sub-eyebrow">NEVER MISS AN IDEA</span>
+            <h2 class="sub-title">Stay Ahead of the Conversation</h2>
+            <p class="sub-desc">Subscribe to receive exclusive editorial essays, speaker talk early drops, and priority delegate ticket links directly in your inbox.</p>
+            
+            <form id="newsletterForm" class="subscribe-form" novalidate>
+              <div class="input-wrap">
+                <input type="email" id="newsletterEmail" placeholder="Enter your email address..." required />
+                <button type="submit" id="newsletterSubmitBtn" class="btn-primary-glow">
+                  <span id="subBtnText">Subscribe</span>
+                  <div class="spinner-small" id="subSpinner" style="display:none;"></div>
+                </button>
+              </div>
+              <div id="newsletterFeedback" class="form-feedback"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 5. GLOBAL FOOTER                                                          -->
+  <!-- ========================================================================= -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <div class="footer-brand">TED<span>x</span>VITPune</div>
+        <p class="footer-disclaimer">
+          This independent TEDx event is operated under license from TED. <br />
+          Vishwakarma Institute of Technology, 666 Upper Indira Nagar, Bibwewadi, Pune, Maharashtra 411037.
+        </p>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-col">
+          <strong>Navigation</strong>
+          <a href="#hero">Stage</a>
+          <a href="#lookbook">Lookbook</a>
+          <a href="#community-conversations">Community</a>
+          <a href="#speakers">Speakers</a>
+        </div>
+        <div class="footer-col">
+          <strong>Discover</strong>
+          <a href="#newsletter">Newsletter</a>
+          <a href="#event-details">Event Passes</a>
+          <a href="#about">About TED & TEDx</a>
+          <a href="#organizers">Contact Leads</a>
+        </div>
+        <div class="footer-col">
+          <strong>Socials</strong>
+          <a href="https://instagram.com" target="_blank" rel="noopener">Instagram ↗</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a href="https://youtube.com" target="_blank" rel="noopener">YouTube ↗</a>
+          <a href="https://x.com" target="_blank" rel="noopener">Twitter / X ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <span>© 2026 TEDxVITPune. All rights reserved.</span>
+      <span>Dimes of Dynamism · Decade Milestone</span>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS: AUTH & PERSONA DASHBOARD (Oj, Ij, Bj)                             -->
+  <!-- ========================================================================= -->
+  <div id="authModal" class="modal-backdrop" aria-hidden="true" role="dialog">
+    <div class="modal-card">
+      <button id="closeAuthModal" class="modal-close-btn" type="button">✕</button>
+      
+      <!-- Dynamic Mesh Canvas Background for Archetype (D1) -->
+      <canvas id="meshGradientCanvas" class="mesh-gradient-canvas"></canvas>
+      
+      <div class="modal-content-wrap">
+        <!-- Tab Select: Join Community vs Login -->
+        <div class="auth-tabs" id="authTabsHeader">
+          <button class="auth-tab-btn active" id="tabSignupBtn" type="button">Join Community / Persona</button>
+          <button class="auth-tab-btn" id="tabLoginBtn" type="button">Sign In</button>
+        </div>
+
+        <!-- Join / Persona Generator Form (Ij, Bj) -->
+        <div id="signupPane" class="auth-pane active">
+          <h3 class="auth-heading">Discover Your TEDx Archetype</h3>
+          <p class="auth-sub">Enter your details to generate your official TEDxVITPune community persona badge.</p>
+          
+          <form id="personaForm" class="auth-form">
+            <div class="form-group">
+              <label for="userNameInput">Full Name</label>
+              <input type="text" id="userNameInput" placeholder="e.g. Yashashree Shelke" required />
+            </div>
+            <div class="form-group">
+              <label for="userEmailInput">Email Address</label>
+              <input type="email" id="userEmailInput" placeholder="name@domain.com" required />
+            </div>
+            <div class="form-group">
+              <label for="userInterestInput">Your Core Passion / Calling</label>
+              <select id="userInterestInput" required>
+                <option value="catalyst">Disruption, Action & Acceleration</option>
+                <option value="visionary">Futures, Strategy & Horizon Thinking</option>
+                <option value="architect">Systems, Engineering & Scalable Impact</option>
+                <option value="explorer">Curiosity, Art & Uncharted Frontiers</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-primary-glow full-width">
+              <span>Generate My Archetype & Join</span>
+            </button>
+          </form>
+
+          <!-- Calculated Archetype Display Card (Bj) -->
+          <div id="archetypeResultCard" class="archetype-card" style="display: none;">
+            <div class="archetype-badge-icon" id="archetypeIcon">⚡</div>
+            <span class="archetype-label" id="archetypeTypeLabel">THE CATALYST</span>
+            <h4 class="archetype-name" id="archetypeUserName">Yashashree Shelke</h4>
+            <p class="archetype-desc" id="archetypeDesc">
+              You thrive on breaking inertia. Where others deliberate, you ignite movement and galvanize change.
+            </p>
+            <div class="archetype-meta">
+              <span>MEMBER #TEDX-2025-884</span>
+              <span>VERIFIED CATALYST</span>
+            </div>
+            <button id="archetypeDoneBtn" class="btn-secondary-outline full-width small-btn" type="button">
+              Save Profile & Continue
+            </button>
+          </div>
+        </div>
+
+        <!-- Sign In Pane (Oj) -->
+        <div id="loginPane" class="auth-pane">
+          <h3 class="auth-heading">Welcome Back</h3>
+          <p class="auth-sub">Sign in with your registered email and OTP.</p>
+          
+          <form id="loginForm" class="auth-form">
+            <div class="form-group">
+              <label for="loginEmail">Email Address</label>
+              <input type="email" id="loginEmail" placeholder="name@domain.com" required />
+            </div>
+            <div class="form-group otp-group">
+              <label for="loginOtp">6-Digit Verification Code</label>
+              <div class="otp-input-row">
+                <input type="text" id="loginOtp" maxlength="6" placeholder="• • • • • •" />
+                <button type="button" id="sendOtpBtn" class="btn-secondary-outline small-btn">Send OTP</button>
+              </div>
+              <span id="otpCountdown" class="otp-timer">Resend in 60s</span>
+            </div>
+            <button type="submit" class="btn-primary-glow full-width">
+              <span>Sign In to Member Dashboard</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX MODAL FOR LOOKBOOK -->
+  <div id="lightboxModal" class="lightbox-modal" aria-hidden="true">
+    <button id="closeLightbox" class="lightbox-close">✕</button>
+    <div class="lightbox-content">
+      <img id="lightboxImg" src="" alt="Enlarged view" />
+      <div class="lightbox-caption">
+        <h4 id="lightboxTitle">Stage Moment</h4>
+        <p id="lightboxSubtitle">TEDxVITPune Archives</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TICKETING CHECKOUT MODAL -->
+  <div id="ticketModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card ticket-checkout-card">
+      <button id="closeTicketModal" class="modal-close-btn" type="button">✕</button>
+      <div class="modal-content-wrap">
+        <span class="cin-mono-tag">OFFICIAL REGISTRATION</span>
+        <h3 class="auth-heading" id="checkoutPassTitle">General Delegate Pass</h3>
+        <div class="checkout-price-pill" id="checkoutPrice">₹899</div>
+        
+        <form id="checkoutForm" class="auth-form">
+          <div class="form-group">
+            <label>Attendee Full Name</label>
+            <input type="text" id="passName" placeholder="Full name" required />
+          </div>
+          <div class="form-group">
+            <label>Email Address for Confirmation</label>
+            <input type="email" id="passEmail" placeholder="name@domain.com" required />
+          </div>
+          <div class="form-group">
+            <label>Contact Number (WhatsApp)</label>
+            <input type="tel" id="passPhone" placeholder="+91 9800000000" required />
+          </div>
+          <div class="form-group">
+            <label>Institution / Organization</label>
+            <input type="text" id="passOrg" placeholder="e.g. VIT Pune / Tech Corp" required />
+          </div>
+          <button type="submit" class="btn-primary-glow full-width">
+            <span>Confirm & Proceed to Payment Gateway ↗</span>
+          </button>
+        </form>
+        <div id="checkoutSuccess" class="checkout-success-view" style="display:none;">
+          <div class="success-icon">✓</div>
+          <h4>Delegate Registration Confirmed!</h4>
+          <p>Your access pass QR code and schedule kit have been emailed to your address.</p>
+          <button id="checkoutDoneBtn" class="btn-secondary-outline full-width">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main JavaScript App -->
+  <script src="./script.js"></script>
+</body>
+</html>

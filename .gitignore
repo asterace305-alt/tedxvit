@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Large media files (exceeding GitHub limits)
+*.mp4
+*.mov
+*.avi
+
+# System & editor files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Temporary notes & scratch files
+pasted_content.txt
